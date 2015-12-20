@@ -60,6 +60,14 @@ Looking at the clock I noticed that the hour was certainly gone (I think I was a
 
 I changed point 1 in the 1h version, but point 2 I addressed later by considering only the four non-diagonal neighbors in my flood-fill algorithm. I think this is different from the original minesweeper, but I did not have Windows at hand and did not check.
 
+Much later I looked at the solution by [mishoo] and I was surprised that a
+solution using CSS style classes did not occur to me -- it should have been
+even less work to simply add and remove css style classes based on the cells
+array contents. I think it was caused by "priming" -- simply by being given
+a Javascript object with img URLs in it, I was pushed towards a solution
+that references the images using the URLs instead of using CSS classes. (Part
+of the surprise was caused by the fact that in a previous job I had been
+the person to push people towards a CSS class-based solution.)
 
 
 Note: I did have to look up the order of arguments for replaceChild when
