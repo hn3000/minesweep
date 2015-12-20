@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>simple minesweeper</title>
+  <style>
+  table tr td img {
+    width: 32px;
+  }
+  </style>
+</head>
+<body>
+  <table></table>
+  <script type="text/javascript">
+  var icons = {
+    blank: 'http://i.imgur.com/HM1e3Tbb.jpg',
+    pressed: 'http://i.imgur.com/bGT8xGEb.jpg',
+    exposedBomb: 'http://i.imgur.com/pTJ8Swhb.jpg',
+    explodedBomb: 'http://i.imgur.com/UFmXprFb.jpg',
+    flag: 'http://i.imgur.com/nLPvW15b.jpg',
+    // Index is # of adjacent bombs
+    bombs: [
+      'http://i.imgur.com/Flqdqi1b.jpg', // 0
+      'http://i.imgur.com/bM8oExob.jpg', // 1
+      'http://i.imgur.com/bQKSbqYb.jpg', // 2
+      'http://i.imgur.com/5jNcEeVb.jpg', // 3
+      'http://i.imgur.com/BnxjHgHb.jpg', // 4
+      'http://i.imgur.com/RaFrMYcb.jpg', // 5
+      'http://i.imgur.com/GlwQOy0b.jpg', // 6
+      'http://i.imgur.com/8ngsVa8b.jpg', // 7
+      'http://i.imgur.com/lJ8P1wab.jpg'  // 8
+    ]
+  };
+
+
+
+  var states = 'blank,pressed,exposedBomb,explodedBomb,flag'.split(',');
+
+  var size = 20;
+  // array of cell states
+  // 128: has bomb
+  // 0..8: number of neighbors with bomb
+  // 256: flag
+  // 512: clicked
+  var cells = [];
+
+  function validCell(x,y) {
+    return (x >= 0 && x < size) && (y >= 0 && y < size);
+  }
+
+  function cell(x,y) {
+    if (validCell(x,y)) {
+      return cells[x + size*y];
+    }
+    return null;
+  }
+
+  function createCells() {
+    var tr, xi,yi;
+    for (yi = 0; yi < size; ++yi) {
+      for (xi = 0; xi < size; ++xi) {
+        var hasBomb = Math.random() < 0.1;
+        cells.push(0 + hasBomb ? 128:0);
+      }
+    }
+    for (yi = 0; yi < size; ++yi) {
+      for (xi = 0; xi < size; ++xi) {
+        var i = xi + size*yi;
+        if (cell(xi-1, yi-1) >= 128) cells[i] += 1;
+        if (cell(xi,   yi-1) >= 128) cells[i] += 1;
+        if (cell(xi+1, yi-1) >= 128) cells[i] += 1;
+        if (cell(xi-1, yi) >= 128) cells[i] += 1;
+        if (cell(xi,   yi) >= 128) cells[i] += 1;
+        if (cell(xi+1, yi) >= 128) cells[i] += 1;
+        if (cell(xi-1, yi+1) >= 128) cells[i] += 1;
+        if (cell(xi,   yi+1) >= 128) cells[i] += 1;
+        if (cell(xi+1, yi+1) >= 128) cells[i] += 1;
+      }
+    }
+  }
+
+  var table = document.querySelector('table');
+
+  function renderCell(x,y) {
+    var i = x + y*size;
+    var td, img;
+    td = document.createElement('td');
+    img = document.createElement('img');
+    td.appendChild(img);
+
+    td.setAttribute('data-x', x);
+    td.setAttribute('data-y', y);
+    td.setAttribute('data-cell', i);
+    td.setAttribute('data-cell-value', cells[i]);
+
+    if (cells[i] < 256) {
+        img.src=icons.blank;
+    } else if (cells[i] & 256) {
+        img.src=icons.flag;
+    } else if (cells[i] & 128) {
+        img.src=icons.explodedBomb;
+    } else {
+        img.src=icons.bombs[cells[i] & 15];
+    }
+
+    return td;
+  }
+
+  function renderView() {
+    table.innerHTML = '';
+    var tr, xi,yi;
+    for (yi = 0; yi < size; ++yi) {
+      tr = document.createElement('tr');
+      for (xi = 0; xi < size; ++xi) {
+        tr.appendChild(renderCell(xi, yi));
+      }
+      table.appendChild(tr);
+    }
+  }
+
+  function renderViewSample() {
+    table.innerHTML = '';
+    var tr = document.createElement('tr');
+    var td, img, i,n;
+    for (i = 0, n = icons.bombs.length; i < n; ++i) {
+      td = document.createElement('td');
+      img = document.createElement('img');
+      img.src=icons.bombs[i];
+      td.appendChild(img);
+      tr.appendChild(td);
+    }
+
+    table.appendChild(tr);
+
+    tr = document.createElement('tr');
+    for (i = 0, n = states.length; i < n; ++i) {
+      td = document.createElement('td');
+      img = document.createElement('img');
+      img.src=icons[states[i]];
+      td.appendChild(img);
+      tr.appendChild(td);
+    }
+
+    table.appendChild(tr);
+
+  }
+
+  function addEmptyCell(a, x,y) {
+    var cellVal = cell(x,y);
+    if (null != cellVal && cellVal < 128) {
+      var c = [x,y];
+      if (-1 === a.indexOf(c)) {
+        a.push(c);
+      }
+    }
+  }
+
+  function updateEmptyCell(x,y, a) {
+    var cellVal = cell(x,y);
+    var index = 1*x+size*y;
+    var update = false;
+    if (0 === cellVal) {
+      cells[index] = 512;
+      addEmptyCell(a, x-1,y-1);
+      addEmptyCell(a, x,  y-1);
+      addEmptyCell(a, x+1,y-1);
+      addEmptyCell(a, x-1,y);
+      addEmptyCell(a, x+1,y);
+      addEmptyCell(a, x-1,y+1);
+      addEmptyCell(a, x,  y+1);
+      addEmptyCell(a, x+1,y+1);
+      update=true;
+    } else if (cellVal < 128) {
+      cells[index] |= 512;
+      update=true;
+    }
+    if (update) {
+      var td = document.querySelector('table tr td[data-cell="'+index+'"]');
+      var tr = td.parentNode;
+      tr.replaceChild(renderCell(x,y), td);
+    }
+  }
+
+  function updateEmptyCells(a) {
+    var nextCells = [];
+
+    for (var i = 0, n = a.length; i < n; ++i) {
+      updateEmptyCell(a[i][0], a[i][1], nextCells);
+    }
+    console.log(nextCells);
+    if (nextCells.length) {
+      window.setTimeout(updateEmptyCells.bind(null, nextCells), 100);
+    }
+  }
+
+
+  function handleCellClick(ev) {
+    console.log(ev, ev.target, ev.target.parentNode);
+    var td = ev.target.parentNode;
+    var i = td.getAttribute('data-cell');
+    if (null != i) {
+      var x = 1*td.getAttribute('data-x');
+      var y = 1*td.getAttribute('data-y');
+      i = 1*i;
+      if (ev.shiftKey) {
+        cells[i] |= 256;
+        var tr = td.parentNode;
+        tr.replaceChild(renderCell(1*x,1*y), td);
+      } else {
+        if (0 === cells[i]) {
+          updateEmptyCells([[x,y]]);
+        } else {
+          cells[i] |= 512;
+          var tr = td.parentNode;
+          tr.replaceChild(renderCell(1*x,1*y), td);
+        }
+      }
+    }
+  }
+
+  createCells();
+  renderView();
+
+  table.addEventListener('click', handleCellClick);
+    </script>
+</body>
+</html>
