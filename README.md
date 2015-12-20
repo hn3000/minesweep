@@ -4,6 +4,8 @@
 
 Since it's only a single page with some external img references you can run the game from the filesystem.
 
+Or use this version on [github.io].
+
 ## Installation
 
 Just put it in a folder on a webserver somewhere.
@@ -73,3 +75,4 @@ one parentNode too far.
 [jsbin]: http://jsbin.com/jucesisaki/2/edit?html,js,output
 [vanilla JS]: http://vanilla-js.com
 [Hackernews]: https://news.ycombinator.com/item?id=10752564
+[github.io]: http://hn3000.github.io/minesweep/
