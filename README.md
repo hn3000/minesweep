@@ -29,12 +29,12 @@ the basics of gameplay in that time if I had all the required assets.
 The [jsbin] contained a convenient JS object with some imgur links and
 as a first step I wrote some code to render a table full of img elements,
 just so I could have a look at the images. Seeing the images after just a
-minute or so seemed to confirm that it should be easy enought and I continued
-noodling around with the jsbin.
+minute or so seemed to confirm that it should be easy enough and I continued
+noodling around with the jsbin for a while.
 
-I was interrupted a few times and did not track the time it took me to
-get to the "1h" version exactly, but it can't have been more than
-an hour and 10 minutes.
+I was interrupted a few times and did not track the time exactly, that it took
+me to get to the "1h" version, but it can't have been more than
+about an hour and 10 minutes.
 
 My implementation went like this:
 
@@ -50,8 +50,8 @@ My implementation went like this:
 10. handle the click by changing the state to "clicked" (or the cell value with 512, which is a single set bit since it's 2^9, I had decided on this representation earlier and did not find it hard to use)
 11. update the cell using replaceChild (see note below), refactoring the actual cell-rendering code out of the renderView function
 12. write the flood fill for the case where an empty cell was hit by the click, I used setTimeout because I wanted the fill to be animated
-13. at this point I changed from jsbin to a local file in a Atom because the debugger started to annoy me while I edited code, every time the code became invalid the debugger stopped because I had turned on "stop on execption" and syntax errors in the error could cause uncaught exceptions
-14. after a few corrected typos and type-conversion problems the code worked okay (I had to remember to make sure my array indices were turned into numbers when I read from node attributes -- I was lazy, I simply multiplied by 1; since I wanted to finish as quickly as possible I used the simplest coding strategies that I knew off the top of my head, and I wanted to avoid having to look up Number.parseInt vs parsetInt or whatever that function is called)
+13. at this point I changed from jsbin to a local file in a Atom because the debugger started to annoy me while I edited code, every time the code became invalid the debugger stopped because I had turned on "stop on exception" and syntax errors in the error could cause uncaught exceptions
+14. after a few corrected typos and type-conversion problems the code worked okay (I had to remember to make sure my array indices were turned into numbers when I read from node attributes -- I was lazy, I simply multiplied by 1; since I wanted to finish as quickly as possible I used the simplest coding strategies that I knew off the top of my head, and I wanted to avoid having to look up Number.parseInt vs parseInt or whatever that function is called)
 
 Looking at the clock I noticed that the hour was certainly gone (I think I was about 10 minutes over time) but the game was already playable. I noticed that the flood-fill of empty cells often made it very easy to solve the game and identified two main reasons:
 
